@@ -95,7 +95,7 @@ function App() {
     <div className="App">
       {getHeaderForRole()}
       <main className="app-content">
-        <NewsFeed />
+        {selectedSection === 'noticias' ? <NewsFeed /> : null}
       </main>
     </div>
   );

@@ -1,24 +1,16 @@
 .newsfeed {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
-  padding: 0.5rem 0;
+  gap: 1.5rem;
 }
 
 .news-card {
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 18px 45px rgba(31, 50, 74, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(31, 50, 74, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(255, 65, 108, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.news-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 55px rgba(31, 50, 74, 0.16);
 }
 
 .news-card-image img {
@@ -28,27 +20,22 @@
 }
 
 .news-card-content {
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  padding: 1.5rem;
 }
 
 .news-card-title {
-  margin: 0;
-  font-size: 1.7rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.6rem;
   color: #1f324a;
-  font-weight: 700;
 }
 
 .news-card-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   font-size: 0.95rem;
   color: #6d8093;
-  text-transform: capitalize;
 }
 
 .news-card-category {
@@ -60,55 +47,9 @@
 
 .news-card-body {
   font-size: 1.05rem;
-  line-height: 1.7;
+  line-height: 1.6;
   color: #374a5e;
   white-space: pre-wrap;
-}
-
-.news-card-body--collapsed {
-  max-height: 7.5rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.news-card-body--collapsed::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2.5rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 90%);
-}
-
-.news-card--expanded .news-card-body {
-  max-height: none;
-}
-
-.news-card-toggle {
-  margin-top: 0.5rem;
-  align-self: flex-start;
-  background: transparent;
-  border: none;
-  color: #ff416c;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0;
-  transition: color 0.2s ease;
-}
-
-.news-card-toggle:hover,
-.news-card-toggle:focus {
-  text-decoration: underline;
-  color: #e3225b;
-}
-
-.news-card-toggle:focus {
-  outline: 2px solid rgba(31, 50, 74, 0.4);
-  outline-offset: 2px;
 }
 
 .newsfeed-loading,
