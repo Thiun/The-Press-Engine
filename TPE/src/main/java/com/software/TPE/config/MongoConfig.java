@@ -51,6 +51,10 @@ public class MongoConfig {
          * Additional URI parameters appended after the database name.
          */
         private String params = "";
+        /**
+         * Enables TLS connections when building the composed connection string.
+         */
+        private Boolean tlsEnabled;
 
         public String getConnectionString() {
             return connectionString;
@@ -116,6 +120,14 @@ public class MongoConfig {
             this.params = params;
         }
 
+        public Boolean getTlsEnabled() {
+            return tlsEnabled;
+        }
+
+        public void setTlsEnabled(Boolean tlsEnabled) {
+            this.tlsEnabled = tlsEnabled;
+        }
+
         private String resolveConnectionString() {
             if (StringUtils.hasText(connectionString)) {
                 return connectionString;
@@ -137,9 +149,9 @@ public class MongoConfig {
             builder.append('/');
             builder.append(StringUtils.hasText(database) ? database : "test");
 
-            if (StringUtils.hasText(params)) {
-                String trimmedParams = params.startsWith("?") ? params.substring(1) : params;
-                builder.append('?').append(trimmedParams);
+            String queryParams = buildQueryParams();
+            if (StringUtils.hasText(queryParams)) {
+                builder.append('?').append(queryParams);
             }
 
             return builder.toString();
@@ -157,6 +169,32 @@ public class MongoConfig {
 
         private String urlEncode(String value) {
             return URLEncoder.encode(value, StandardCharsets.UTF_8);
+        }
+
+        private String buildQueryParams() {
+            String trimmedParams = params;
+            if (StringUtils.hasText(trimmedParams) && trimmedParams.startsWith("?")) {
+                trimmedParams = trimmedParams.substring(1);
+            }
+
+            StringBuilder builder = new StringBuilder();
+            if (StringUtils.hasText(trimmedParams)) {
+                builder.append(trimmedParams);
+            }
+
+            if (Boolean.TRUE.equals(tlsEnabled) && !containsTlsParameter(builder)) {
+                if (builder.length() > 0) {
+                    builder.append('&');
+                }
+                builder.append("tls=true");
+            }
+
+            return builder.toString();
+        }
+
+        private boolean containsTlsParameter(StringBuilder builder) {
+            String value = builder.toString().toLowerCase();
+            return value.contains("tls=") || value.contains("ssl=");
         }
     }
 }
