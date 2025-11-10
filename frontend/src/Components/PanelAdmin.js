@@ -10,6 +10,38 @@ function PanelAdmin({ user, onClose }) {
   const [feedbackByPost, setFeedbackByPost] = useState({});
   const [deleteReasons, setDeleteReasons] = useState({});
 
+  const parseFecha = (valor) => {
+    if (!valor) {
+      return null;
+    }
+
+    if (Array.isArray(valor)) {
+      const [year, month = 1, day = 1, hour = 0, minute = 0, second = 0] = valor;
+      return new Date(year, month - 1, day, hour, minute, second);
+    }
+
+    const fecha = new Date(valor);
+
+    if (Number.isNaN(fecha.getTime()) && typeof valor === 'number') {
+      return new Date(valor);
+    }
+
+    return Number.isNaN(fecha.getTime()) ? null : fecha;
+  };
+
+  const formatearFecha = (valor) => {
+    const fecha = parseFecha(valor);
+    if (!fecha) {
+      return 'Sin registro';
+    }
+
+    return fecha.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   // Cargar datos según la pestaña activa
   useEffect(() => {
     switch(activeTab) {
@@ -78,9 +110,9 @@ function PanelAdmin({ user, onClose }) {
   };
 
   // Manejar aprobación/rechazo de solicitudes de escritores
-  const manejarSolicitudEscritor = async (solicitudId, aprobado) => {
+  const manejarSolicitudEscritor = async (solicitud, aprobado) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/solicitudes/${solicitudId}`, {
+      const response = await fetch(`http://localhost:8080/api/solicitudes/${solicitud.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -91,9 +123,9 @@ function PanelAdmin({ user, onClose }) {
       if (response.ok) {
         // Actualizar rol del usuario si es aprobado
         if (aprobado) {
-          await actualizarRolUsuario(solicitudId, 'WRITER');
+          await actualizarRolUsuario(solicitud.userId, 'WRITER', { silent: true });
         }
-        
+
         fetchSolicitudesEscritores();
         alert(`Solicitud ${aprobado ? 'aprobada' : 'rechazada'} correctamente`);
       }
@@ -103,23 +135,34 @@ function PanelAdmin({ user, onClose }) {
   };
 
   // Actualizar rol de usuario
-  const actualizarRolUsuario = async (solicitudId, nuevoRol) => {
+  const actualizarRolUsuario = async (userId, nuevoRol, { silent = false } = {}) => {
     try {
-      // Primero obtener la solicitud para saber el userId
-      const solicitud = solicitudesEscritores.find(s => s.id === solicitudId);
-      if (solicitud) {
-        const response = await fetch(`http://localhost:8080/api/users/${solicitud.userId}/role`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role: nuevoRol })
-        });
+      const response = await fetch(`http://localhost:8080/api/users/${userId}/role`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: nuevoRol })
+      });
 
-        if (!response.ok) {
-          console.error('Error actualizando rol de usuario');
-        }
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || 'No se pudo actualizar el rol del usuario');
       }
+
+      await fetchUsuarios();
+
+      if (!silent) {
+        const mensaje = nuevoRol === 'WRITER'
+          ? 'El usuario ahora es escritor.'
+          : 'El usuario volvió a ser lector.';
+        alert(mensaje);
+      }
+      return true;
     } catch (error) {
       console.error('Error:', error);
+      if (!silent) {
+        alert(error.message);
+      }
+      return false;
     }
   };
 
@@ -182,7 +225,7 @@ function PanelAdmin({ user, onClose }) {
   };
 
   // Manejar usuarios
-  const manejarUsuario = async (userId, accion) => {
+  const manejarUsuario = async (userId, accion, mensajeExito) => {
     try {
       const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
         method: 'PUT',
@@ -190,13 +233,27 @@ function PanelAdmin({ user, onClose }) {
         body: JSON.stringify({ accion }) // BAN, UNBAN, DELETE, etc.
       });
 
-      if (response.ok) {
-        fetchUsuarios();
-        alert('Usuario actualizado correctamente');
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || 'No se pudo actualizar el estado del usuario');
       }
+
+      await fetchUsuarios();
+      alert(mensajeExito || 'Usuario actualizado correctamente');
     } catch (error) {
       console.error('Error actualizando usuario:', error);
+      alert(error.message || 'Ocurrió un error al actualizar el usuario');
     }
+  };
+
+  const manejarSuspensionUsuario = (usuario) => {
+    const estaSuspendido = usuario.status === 'BANNED';
+    const accion = estaSuspendido ? 'UNBAN' : 'BAN';
+    const mensaje = estaSuspendido
+      ? 'La suspensión del usuario fue removida correctamente.'
+      : 'El usuario fue suspendido correctamente.';
+
+    manejarUsuario(usuario.id, accion, mensaje);
   };
 
   const solicitudesPendientes = solicitudesEscritores.filter(
@@ -261,15 +318,15 @@ function PanelAdmin({ user, onClose }) {
                   </div>
 
                   <div className="solicitud-actions">
-                    <button 
+                    <button
                       className="btn-aprobar"
-                      onClick={() => manejarSolicitudEscritor(solicitud.id, true)}
+                      onClick={() => manejarSolicitudEscritor(solicitud, true)}
                     >
                       ✅ Aprobar como Escritor
                     </button>
-                    <button 
+                    <button
                       className="btn-rechazar"
-                      onClick={() => manejarSolicitudEscritor(solicitud.id, false)}
+                      onClick={() => manejarSolicitudEscritor(solicitud, false)}
                     >
                       ❌ Rechazar Solicitud
                     </button>
@@ -390,11 +447,11 @@ function PanelAdmin({ user, onClose }) {
                           </span>
                         </td>
                         <td>
-                          {new Date(usuario.createdAt).toLocaleDateString()}
+                          {formatearFecha(usuario.createdAt)}
                         </td>
                         <td className="user-actions">
                           {usuario.role === 'READER' && (
-                            <button 
+                            <button
                               className="btn-promote"
                               onClick={() => actualizarRolUsuario(usuario.id, 'WRITER')}
                             >
@@ -402,18 +459,18 @@ function PanelAdmin({ user, onClose }) {
                             </button>
                           )}
                           {usuario.role === 'WRITER' && (
-                            <button 
+                            <button
                               className="btn-demote"
                               onClick={() => actualizarRolUsuario(usuario.id, 'READER')}
                             >
                               ➖ Quitar Escritor
                             </button>
                           )}
-                          <button 
+                          <button
                             className="btn-ban"
-                            onClick={() => manejarUsuario(usuario.id, 'BAN')}
+                            onClick={() => manejarSuspensionUsuario(usuario)}
                           >
-                            🔨 Suspender
+                            {usuario.status === 'BANNED' ? '✅ Quitar Suspensión' : '🔨 Suspender'}
                           </button>
                         </td>
                       </tr>
