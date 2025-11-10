@@ -40,6 +40,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.password()))
                 .role(UserRole.READER)
                 .status(UserStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         User saved = userRepository.save(user);
