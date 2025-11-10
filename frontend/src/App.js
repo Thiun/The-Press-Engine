@@ -3,6 +3,7 @@ import HeaderNoLog from './Components/HeaderNoLog';
 import HeaderLogLector from './Components/HeaderLogLector';
 import HeaderLogWriter from './Components/HeaderLogWriter';
 import HeaderLogAdmin from './Components/HeaderLogAdmin';
+import NewsFeed from './Components/NewsFeed';
 import './App.css';
 
 function App() {
@@ -98,9 +99,7 @@ function App() {
     <div className="App">
       {getHeaderForRole()}
       <main className="app-content">
-        {selectedSection === 'noticias' ? (
-          <p className="app-placeholder">Selecciona una opción en el menú para comenzar.</p>
-        ) : null}
+        {selectedSection === 'noticias' ? <NewsFeed /> : null}
       </main>
     </div>
   );

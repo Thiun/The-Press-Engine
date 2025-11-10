@@ -66,6 +66,12 @@ public class PostService {
                 .toList();
     }
 
+    public List<PostResponse> findPublished() {
+        return postRepository.findByStatusOrderByCreatedAtDesc(PostStatus.APPROVED).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public PostResponse reviewPost(String postId, ReviewPostRequest request) {
         Post post = getPost(postId);
         post.setStatus(request.status());
