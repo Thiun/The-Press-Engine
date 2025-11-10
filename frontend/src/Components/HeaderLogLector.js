@@ -13,11 +13,10 @@ function HeaderLogLector({ onSolicitudTrabajo, onLogout, user }) {
     setShowModal(false);
   };
 
-  const handleSubmitSolicitud = (solicitudData) => {
+  const handleSubmitSolicitud = async (solicitudData) => {
     if (onSolicitudTrabajo) {
-      onSolicitudTrabajo(solicitudData);
+      await onSolicitudTrabajo(solicitudData);
     }
-    alert('¡Solicitud enviada! Serás notificado cuando sea revisada.');
   };
 
   return (

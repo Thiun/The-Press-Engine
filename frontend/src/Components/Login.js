@@ -38,20 +38,16 @@ function Login({ onLogin }) {
       });
 
       if (response.ok) {
-        const userData = await response.json();
-        
-        // Login exitoso - pasar datos al componente padre
+        const data = await response.json();
+
         if (onLogin) {
-          onLogin(userData);
+          onLogin(data);
         }
 
-        // Opcional: Resetear formulario
         setFormData({ email: '', password: '' });
-        
       } else {
-        // ✅ Error del backend (credenciales incorrectas, usuario no existe, etc.)
-        const errorMessage = await response.text();
-        setError(errorMessage || 'Credenciales incorrectas');
+        const errorBody = await response.json().catch(async () => ({ message: await response.text() }));
+        setError(errorBody.message || 'Credenciales incorrectas');
       }
     } catch (error) {
       setError('Error de conexión con el servidor');

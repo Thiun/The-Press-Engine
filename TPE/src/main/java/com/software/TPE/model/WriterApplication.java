@@ -6,35 +6,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "users")
+@Document(collection = "writer_applications")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
+public class WriterApplication {
     @Id
     private String id;
 
-    private String name;
+    private String userId;
 
-    @Indexed(unique = true)
-    private String email;
+    private String userName;
 
-    private String password;
+    private String userEmail;
 
-    private UserRole role;
+    private String motivacion;
 
-    private UserStatus status;
+    private WriterApplicationStatus estado;
 
     @CreatedDate
-    private LocalDateTime createdAt;
-
-    private LocalDateTime lastLoginAt;
+    private LocalDateTime fechaSolicitud;
 }
-

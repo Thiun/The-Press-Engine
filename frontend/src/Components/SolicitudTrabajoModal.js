@@ -3,10 +3,12 @@ import './SolicitudModal.css';
 
 function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
   const [motivacion, setMotivacion] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // ✅ VERIFICAR que user existe antes de usarlo
     if (!user || !user.id) {
       alert('Error: Información de usuario no disponible');
@@ -22,17 +24,22 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
       userId: user.id, // ✅ Ahora user está verificado
       userName: user.name || 'Usuario',
       userEmail: user.email || 'No especificado',
-      motivacion: motivacion,
-      fechaSolicitud: new Date().toISOString(),
-      estado: 'pendiente'
+      motivacion: motivacion
     };
 
-    if (onSubmit) {
-      onSubmit(solicitud);
+    try {
+      setLoading(true);
+      setError('');
+      if (onSubmit) {
+        await onSubmit(solicitud);
+      }
+      setMotivacion('');
+      onClose();
+    } catch (err) {
+      setError(err.message || 'No se pudo enviar la solicitud');
+    } finally {
+      setLoading(false);
     }
-
-    setMotivacion('');
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -51,10 +58,10 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
         <form onSubmit={handleSubmit} className="solicitud-form">
           <div className="form-group">
             <label>Nombre:</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={user?.name || 'No disponible'} // ✅ Usar optional chaining
-              disabled 
+              disabled
               className="disabled-input"
             />
           </div>
@@ -71,7 +78,7 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
 
           <div className="form-group">
             <label htmlFor="motivacion">
-              Motivación * 
+              Motivación *
               <span className="char-count">({motivacion.length}/500)</span>
             </label>
             <textarea
@@ -82,6 +89,7 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
               required
               maxLength={500}
               rows={5}
+              disabled={loading}
             />
             <div className="char-hint">Mínimo 10 caracteres</div>
           </div>
@@ -90,10 +98,11 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
             <button type="button" className="btn-cancel" onClick={onClose}>
               Cancelar
             </button>
-            <button type="submit" className="btn-submit">
-              Enviar Solicitud
+            <button type="submit" className="btn-submit" disabled={loading}>
+              {loading ? 'Enviando...' : 'Enviar Solicitud'}
             </button>
           </div>
+          {error && <div className="error-message">{error}</div>}
         </form>
       </div>
     </div>

@@ -16,8 +16,8 @@ function HeaderNoLog({ onLoginSuccess }) {
 
   const handleRegisterSuccess = () => {
     setShowRegister(false);
-    // Opcional: mostrar mensaje o redirigir a login
     alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+    setShowLogin(true);
   };
 
   return (
