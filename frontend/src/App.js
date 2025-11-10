@@ -17,6 +17,7 @@ function App() {
       return null;
     }
   });
+  const [selectedSection] = useState('noticias');
   useEffect(() => {
     if (session) {
       localStorage.setItem('tpe-session', JSON.stringify(session));
