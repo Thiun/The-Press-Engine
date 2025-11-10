@@ -28,8 +28,8 @@ function PanelSolicitudesAdmin() {
       const response = await fetch(`http://localhost:8080/api/solicitudes/${solicitudId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          estado: aprobado ? 'aprobada' : 'rechazada' 
+        body: JSON.stringify({
+          estado: aprobado ? 'APROBADA' : 'RECHAZADA'
         })
       });
 

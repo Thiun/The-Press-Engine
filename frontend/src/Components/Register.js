@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Register.css';
-// Componente de registro de usuario, meter logica para ver si el usuario ya esta registrado en el backend
+
 function Register({ onRegister }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -8,6 +8,8 @@ function Register({ onRegister }) {
     password: '',
     confirmPassword: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,48 +17,68 @@ function Register({ onRegister }) {
       ...prev,
       [name]: value
     }));
+
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      setError('Las contraseñas no coinciden');
       return;
     }
 
     if (formData.password.length < 8) {
-      alert('La contraseña debe tener al menos 8 caracteres');
+      setError('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
+    setLoading(true);
 
-    const userObject = {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      role: 'READER', // FIJO - solo lectores
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    if (onRegister) {
-      onRegister(userObject);
+      if (response.ok) {
+        const data = await response.json();
+        if (onRegister) {
+          onRegister(data);
+        }
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+        setError('');
+      } else {
+        const errorBody = await response.json().catch(async () => ({ message: await response.text() }));
+        setError(errorBody.message || 'No se pudo completar el registro');
+      }
+    } catch (err) {
+      setError('Error de conexión con el servidor');
+    } finally {
+      setLoading(false);
     }
-
-   
-    setFormData({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    });
   };
 
   return (
     <div className="register-container">
       <h2>Registrarse</h2>
       <p className="register-subtitle">Únete a The Press Engine como lector</p>
-      
+
+      {error && <div className="error-message">{error}</div>}
+
       <form onSubmit={handleSubmit} className="register-form">
         <div className="form-group">
           <label>Nombre completo:</label>
@@ -67,6 +89,7 @@ function Register({ onRegister }) {
             onChange={handleChange}
             required
             placeholder="Ingresa tu nombre"
+            disabled={loading}
           />
         </div>
 
@@ -79,6 +102,7 @@ function Register({ onRegister }) {
             onChange={handleChange}
             required
             placeholder="ejemplo@correo.com"
+            disabled={loading}
           />
         </div>
 
@@ -92,6 +116,7 @@ function Register({ onRegister }) {
             required
             placeholder="Mínimo 8 caracteres"
             minLength="8"
+            disabled={loading}
           />
         </div>
 
@@ -104,6 +129,7 @@ function Register({ onRegister }) {
             onChange={handleChange}
             required
             placeholder="Repite tu contraseña"
+            disabled={loading}
           />
         </div>
 
@@ -112,8 +138,8 @@ function Register({ onRegister }) {
           <p>Podrás leer artículos y pronto comentarás</p>
         </div>
 
-        <button type="submit" className="register-button">
-          Registrarse 
+        <button type="submit" className="register-button" disabled={loading}>
+          {loading ? 'Registrando...' : 'Registrarse'}
         </button>
       </form>
     </div>

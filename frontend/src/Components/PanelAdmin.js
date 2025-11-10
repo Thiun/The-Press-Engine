@@ -7,7 +7,8 @@ function PanelAdmin({ user, onClose }) {
   const [noticiasPendientes, setNoticiasPendientes] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState('');
+  const [feedbackByPost, setFeedbackByPost] = useState({});
+  const [deleteReasons, setDeleteReasons] = useState({});
 
   // Cargar datos según la pestaña activa
   useEffect(() => {
@@ -50,6 +51,8 @@ function PanelAdmin({ user, onClose }) {
       if (response.ok) {
         const data = await response.json();
         setNoticiasPendientes(data);
+        setFeedbackByPost({});
+        setDeleteReasons({});
       }
     } catch (error) {
       console.error('Error cargando noticias:', error);
@@ -80,8 +83,8 @@ function PanelAdmin({ user, onClose }) {
       const response = await fetch(`http://localhost:8080/api/solicitudes/${solicitudId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          estado: aprobado ? 'aprobada' : 'rechazada' 
+        body: JSON.stringify({
+          estado: aprobado ? 'APROBADA' : 'RECHAZADA'
         })
       });
 
@@ -121,25 +124,34 @@ function PanelAdmin({ user, onClose }) {
   };
 
   // Manejar aprobación/rechazo de noticias
-  const manejarNoticia = async (noticiaId, aprobado, feedback = '') => {
+  const manejarNoticia = async (noticiaId, aprobado) => {
     try {
+      const feedbackValue = feedbackByPost[noticiaId] || '';
       const response = await fetch(`http://localhost:8080/api/posts/${noticiaId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: aprobado ? 'APPROVED' : 'REJECTED',
-          feedback: feedback
+          feedback: aprobado ? null : feedbackValue || null
         })
       });
 
       if (response.ok) {
         fetchNoticiasPendientes();
         alert(`Noticia ${aprobado ? 'aprobada' : 'rechazada'} correctamente`);
-        setFeedback('');
+        setFeedbackByPost(prev => ({ ...prev, [noticiaId]: '' }));
       }
     } catch (error) {
       console.error('Error actualizando noticia:', error);
     }
+  };
+
+  const handleFeedbackChange = (postId, value) => {
+    setFeedbackByPost(prev => ({ ...prev, [postId]: value }));
+  };
+
+  const handleDeleteReasonChange = (postId, value) => {
+    setDeleteReasons(prev => ({ ...prev, [postId]: value }));
   };
 
   // Eliminar noticia
@@ -153,8 +165,8 @@ function PanelAdmin({ user, onClose }) {
       const response = await fetch(`http://localhost:8080/api/posts/${noticiaId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          status: 'DELETED',
+        body: JSON.stringify({
+          status: 'REJECTED',
           deleteReason: razon
         })
       });
@@ -162,6 +174,7 @@ function PanelAdmin({ user, onClose }) {
       if (response.ok) {
         fetchNoticiasPendientes();
         alert('Noticia eliminada correctamente');
+        setDeleteReasons(prev => ({ ...prev, [noticiaId]: '' }));
       }
     } catch (error) {
       console.error('Error eliminando noticia:', error);
@@ -311,13 +324,13 @@ function PanelAdmin({ user, onClose }) {
                     <div className="rechazo-section">
                       <textarea
                         placeholder="Retroalimentación para el escritor (opcional)"
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
+                        value={feedbackByPost[noticia.id] || ''}
+                        onChange={(e) => handleFeedbackChange(noticia.id, e.target.value)}
                         rows={3}
                       />
-                      <button 
+                      <button
                         className="btn-rechazar"
-                        onClick={() => manejarNoticia(noticia.id, false, feedback)}
+                        onClick={() => manejarNoticia(noticia.id, false)}
                       >
                         ❌ Rechazar con Retroalimentación
                       </button>
@@ -328,10 +341,12 @@ function PanelAdmin({ user, onClose }) {
                         type="text"
                         placeholder="Razón para eliminar la noticia"
                         className="delete-reason-input"
+                        value={deleteReasons[noticia.id] || ''}
+                        onChange={(e) => handleDeleteReasonChange(noticia.id, e.target.value)}
                       />
-                      <button 
+                      <button
                         className="btn-eliminar"
-                        onClick={() => eliminarNoticia(noticia.id, document.querySelector('.delete-reason-input').value)}
+                        onClick={() => eliminarNoticia(noticia.id, deleteReasons[noticia.id] || '')}
                       >
                         🗑️ Eliminar Noticia
                       </button>

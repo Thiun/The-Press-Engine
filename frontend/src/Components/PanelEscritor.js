@@ -364,8 +364,8 @@ function PanelEscritor({ user, onClose }) {
                     </div>
                   )}
 
-                  {/* Mostrar si fue eliminada */}
-                  {post.status === 'DELETED' && post.deleteReason && (
+                  {/* Mostrar si fue rechazada con motivo de eliminación */}
+                  {post.status === 'REJECTED' && post.deleteReason && (
                     <div className="delete-section">
                       <strong>🗑️ Noticia eliminada - Razón:</strong>
                       <p className="delete-reason">{post.deleteReason}</p>
