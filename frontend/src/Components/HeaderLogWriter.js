@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PanelEscritor from './PanelEscritor';
 import './Headers.css';
 
-function HeaderLogWriter({ user, onLogout, onNavegacion }) {
+function HeaderLogWriter({ user, onLogout }) {
   const [showPanel, setShowPanel] = useState(false);
 
   return (
@@ -14,17 +14,11 @@ function HeaderLogWriter({ user, onLogout, onNavegacion }) {
           
           {/* Navegación central para escritores */}
           <nav className="header-nav-center">
-            <button 
-              className="nav-btn"
-              onClick={() => onNavegacion('noticias')}
-            >
-              📰 Ver Noticias
-            </button>
-            <button 
+            <button
               className="nav-btn escritor-btn"
               onClick={() => setShowPanel(true)}
             >
-              ✍️ Panel Escritor
+              ✍️ Panel de Escritura
             </button>
           </nav>
 

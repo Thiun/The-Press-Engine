@@ -29,6 +29,11 @@ public class PostController {
         return ResponseEntity.ok(postService.findAll());
     }
 
+    @GetMapping("/publicadas")
+    public ResponseEntity<List<PostResponse>> findPublished() {
+        return ResponseEntity.ok(postService.findPublished());
+    }
+
     @GetMapping("/pendientes")
     public ResponseEntity<List<PostResponse>> findPending() {
         return ResponseEntity.ok(postService.findPending());

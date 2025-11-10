@@ -3,6 +3,7 @@ import HeaderNoLog from './Components/HeaderNoLog';
 import HeaderLogLector from './Components/HeaderLogLector';
 import HeaderLogWriter from './Components/HeaderLogWriter';
 import HeaderLogAdmin from './Components/HeaderLogAdmin';
+import NewsFeed from './Components/NewsFeed';
 import './App.css';
 
 function App() {
@@ -16,8 +17,6 @@ function App() {
       return null;
     }
   });
-  const [selectedSection, setSelectedSection] = useState('noticias');
-
   useEffect(() => {
     if (session) {
       localStorage.setItem('tpe-session', JSON.stringify(session));
@@ -72,7 +71,6 @@ function App() {
           <HeaderLogAdmin
             user={currentUser}
             onLogout={handleLogout}
-            onNavegacion={setSelectedSection}
           />
         );
       case 'WRITER':
@@ -80,7 +78,6 @@ function App() {
           <HeaderLogWriter
             user={currentUser}
             onLogout={handleLogout}
-            onNavegacion={setSelectedSection}
           />
         );
       default:
@@ -98,9 +95,7 @@ function App() {
     <div className="App">
       {getHeaderForRole()}
       <main className="app-content">
-        {selectedSection === 'noticias' ? (
-          <p className="app-placeholder">Selecciona una opción en el menú para comenzar.</p>
-        ) : null}
+        <NewsFeed />
       </main>
     </div>
   );

@@ -2,14 +2,8 @@ import React, { useState } from 'react';
 import PanelAdmin from './PanelAdmin';
 import './Headers.css';
 
-function HeaderLogAdmin({ user, onLogout, onNavegacion }) {
+function HeaderLogAdmin({ user, onLogout }) {
   const [showPanel, setShowPanel] = useState(false);
-
-  const handleNavegacion = (section) => {
-    if (onNavegacion && typeof onNavegacion === 'function') {
-      onNavegacion(section);
-    }
-  };
 
   return (
     <>
@@ -20,17 +14,11 @@ function HeaderLogAdmin({ user, onLogout, onNavegacion }) {
           
           {/* Navegación central para administradores */}
           <nav className="header-nav-center">
-            <button 
-              className="nav-btn"
-              onClick={() => handleNavegacion('noticias')}
-            >
-              📰 Ver Noticias
-            </button>
-            <button 
+            <button
               className="nav-btn admin-btn"
               onClick={() => setShowPanel(true)}
             >
-              ⚙️ Panel Admin
+              ⚙️ Panel de Administración
             </button>
           </nav>
 

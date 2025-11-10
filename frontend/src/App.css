@@ -1,15 +1,33 @@
 .App {
   min-height: 100vh;
-  background-color: #f5f7fb;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.35), transparent 55%),
+              radial-gradient(circle at bottom right, rgba(255, 107, 107, 0.18), transparent 60%),
+              linear-gradient(160deg, #f5f7fb 0%, #ffe5e5 45%, #f6f9ff 100%);
+  background-attachment: fixed;
 }
 
 .app-content {
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  color: #555;
+  padding: 3rem 1.5rem 4rem;
+  color: #4a5568;
+  z-index: 0;
 }
 
-.app-placeholder {
-  font-size: 1.1rem;
+.app-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 32px;
+  box-shadow: 0 20px 40px rgba(31, 50, 74, 0.12);
+  backdrop-filter: blur(6px);
+  z-index: -1;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 2.5rem 1.25rem 3rem;
+  }
 }
