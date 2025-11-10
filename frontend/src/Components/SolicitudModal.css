@@ -1,0 +1,108 @@
+.solicitud-modal {
+  max-width: 600px;
+}
+
+.modal-description {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.solicitud-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: #666;
+}
+
+.disabled-input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
+
+.char-hint {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: #218838;
+}
+
+.btn-submit:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
