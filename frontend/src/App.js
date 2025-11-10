@@ -17,8 +17,6 @@ function App() {
       return null;
     }
   });
-  const [selectedSection, setSelectedSection] = useState('noticias');
-
   useEffect(() => {
     if (session) {
       localStorage.setItem('tpe-session', JSON.stringify(session));
@@ -73,7 +71,6 @@ function App() {
           <HeaderLogAdmin
             user={currentUser}
             onLogout={handleLogout}
-            onNavegacion={setSelectedSection}
           />
         );
       case 'WRITER':
@@ -81,7 +78,6 @@ function App() {
           <HeaderLogWriter
             user={currentUser}
             onLogout={handleLogout}
-            onNavegacion={setSelectedSection}
           />
         );
       default:

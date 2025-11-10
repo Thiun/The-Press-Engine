@@ -199,17 +199,21 @@ function PanelAdmin({ user, onClose }) {
     }
   };
 
+  const solicitudesPendientes = solicitudesEscritores.filter(
+    (solicitud) => solicitud.estado === 'pendiente'
+  );
+
   return (
     <div className="panel-admin">
       <h2>⚙️ Panel de Administración</h2>
-      
+
       {/* Tabs de navegación */}
       <div className="tabs">
         <button 
           className={`tab ${activeTab === 'solicitudes' ? 'active' : ''}`}
           onClick={() => setActiveTab('solicitudes')}
         >
-          👥 Solicitudes ({solicitudesEscritores.length})
+          👥 Solicitudes ({solicitudesPendientes.length})
         </button>
         <button 
           className={`tab ${activeTab === 'noticias' ? 'active' : ''}`}
@@ -233,14 +237,12 @@ function PanelAdmin({ user, onClose }) {
           <div className="solicitudes-list">
             {loading ? (
               <div className="loading">Cargando solicitudes...</div>
-            ) : solicitudesEscritores.length === 0 ? (
+            ) : solicitudesPendientes.length === 0 ? (
               <div className="empty-state">
                 <p>✅ No hay solicitudes pendientes</p>
               </div>
             ) : (
-              solicitudesEscritores
-                .filter(s => s.estado === 'pendiente')
-                .map(solicitud => (
+              solicitudesPendientes.map(solicitud => (
                 <div key={solicitud.id} className="solicitud-card">
                   <div className="solicitud-header">
                     <h3>{solicitud.userName}</h3>
