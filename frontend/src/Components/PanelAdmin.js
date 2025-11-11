@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PanelAdmin.css';
 
-function PanelAdmin({ user, onClose }) {
+function PanelAdmin({ user }) {
   const [activeTab, setActiveTab] = useState('solicitudes');
   const [solicitudesEscritores, setSolicitudesEscritores] = useState([]);
   const [noticiasPendientes, setNoticiasPendientes] = useState([]);

@@ -45,9 +45,8 @@ function HeaderLogAdmin({ user, onLogout }) {
             >
               ×
             </button>
-            <PanelAdmin 
+            <PanelAdmin
               user={user}
-              onClose={() => setShowPanel(false)}
             />
           </div>
         </div>
