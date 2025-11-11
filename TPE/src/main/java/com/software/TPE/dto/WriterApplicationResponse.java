@@ -7,7 +7,7 @@ public record WriterApplicationResponse(
         String userId,
         String userName,
         String userEmail,
-        String motivacion,
+        String motivo,
         String estado,
         LocalDateTime fechaSolicitud
 ) {

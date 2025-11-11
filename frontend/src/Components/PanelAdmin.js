@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PanelAdmin.css';
 
-function PanelAdmin({ user, onClose }) {
+function PanelAdmin({ user }) {
   const [activeTab, setActiveTab] = useState('solicitudes');
   const [solicitudesEscritores, setSolicitudesEscritores] = useState([]);
   const [noticiasPendientes, setNoticiasPendientes] = useState([]);
@@ -226,6 +226,11 @@ function PanelAdmin({ user, onClose }) {
 
   // Manejar usuarios
   const manejarUsuario = async (userId, accion, mensajeExito) => {
+    if (userId === user?.id) {
+      alert('No puedes modificar tu propio estado.');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
         method: 'PUT',
@@ -246,12 +251,21 @@ function PanelAdmin({ user, onClose }) {
     }
   };
 
-  const manejarSuspensionUsuario = (usuario) => {
-    const estaSuspendido = usuario.status === 'BANNED';
-    const accion = estaSuspendido ? 'UNBAN' : 'BAN';
-    const mensaje = estaSuspendido
-      ? 'La suspensión del usuario fue removida correctamente.'
-      : 'El usuario fue suspendido correctamente.';
+  const manejarEstadoUsuario = (usuario) => {
+    if (usuario.status === 'BANNED') {
+      manejarUsuario(
+        usuario.id,
+        'UNBAN',
+        'La suspensión del usuario fue removida correctamente.'
+      );
+      return;
+    }
+
+    const estaEliminado = usuario.status === 'DELETED';
+    const accion = estaEliminado ? 'UNBAN' : 'DELETE';
+    const mensaje = estaEliminado
+      ? 'El usuario fue restaurado correctamente.'
+      : 'El usuario fue eliminado correctamente.';
 
     manejarUsuario(usuario.id, accion, mensaje);
   };
@@ -312,9 +326,9 @@ function PanelAdmin({ user, onClose }) {
                     </span>
                   </div>
 
-                  <div className="solicitud-motivacion">
-                    <strong>Motivación:</strong>
-                    <p>{solicitud.motivacion}</p>
+                  <div className="solicitud-motivo">
+                    <strong>Motivo:</strong>
+                    <p>{solicitud.motivo}</p>
                   </div>
 
                   <div className="solicitud-actions">
@@ -468,9 +482,17 @@ function PanelAdmin({ user, onClose }) {
                           )}
                           <button
                             className="btn-ban"
-                            onClick={() => manejarSuspensionUsuario(usuario)}
+                            disabled={usuario.id === user?.id}
+                            onClick={() => manejarEstadoUsuario(usuario)}
+                            title={usuario.id === user?.id ? 'No puedes modificar tu propia cuenta' : ''}
                           >
-                            {usuario.status === 'BANNED' ? '✅ Quitar Suspensión' : '🔨 Suspender'}
+                            {usuario.id === user?.id
+                              ? 'No disponible'
+                              : usuario.status === 'BANNED'
+                                ? '✅ Quitar Suspensión'
+                                : usuario.status === 'DELETED'
+                                  ? '♻️ Restaurar Usuario'
+                                  : '🗑️ Eliminar Usuario'}
                           </button>
                         </td>
                       </tr>
