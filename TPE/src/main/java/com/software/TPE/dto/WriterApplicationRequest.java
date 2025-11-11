@@ -12,7 +12,7 @@ public record WriterApplicationRequest(
         @NotBlank(message = "El correo electrónico del usuario es obligatorio")
         String userEmail,
 
-        @NotBlank(message = "La motivación es obligatoria")
-        String motivacion
+        @NotBlank(message = "El motivo es obligatorio")
+        String motivo
 ) {
 }

@@ -51,7 +51,7 @@ public class WriterApplicationService {
                 .userId(user.getId())
                 .userName(request.userName())
                 .userEmail(request.userEmail().toLowerCase(Locale.ROOT))
-                .motivacion(request.motivacion())
+                .motivo(request.motivo())
                 .estado(WriterApplicationStatus.PENDIENTE)
                 .fechaSolicitud(LocalDateTime.now())
                 .build();
@@ -80,7 +80,7 @@ public class WriterApplicationService {
                 application.getUserId(),
                 application.getUserName(),
                 application.getUserEmail(),
-                application.getMotivacion(),
+                application.getMotivo(),
                 application.getEstado().name().toLowerCase(Locale.ROOT),
                 application.getFechaSolicitud()
         );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './SolicitudModal.css';
 
 function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
-  const [motivacion, setMotivacion] = useState('');
+  const [motivo, setMotivo] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -15,8 +15,8 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
       return;
     }
     
-    if (motivacion.trim().length < 10) {
-      alert('Por favor, escribe una motivación de al menos 10 caracteres');
+    if (motivo.trim().length < 10) {
+      alert('Por favor, escribe un motivo de al menos 10 caracteres');
       return;
     }
 
@@ -24,7 +24,7 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
       userId: user.id, // ✅ Ahora user está verificado
       userName: user.name || 'Usuario',
       userEmail: user.email || 'No especificado',
-      motivacion: motivacion
+      motivo: motivo
     };
 
     try {
@@ -33,7 +33,7 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
       if (onSubmit) {
         await onSubmit(solicitud);
       }
-      setMotivacion('');
+      setMotivo('');
       onClose();
     } catch (err) {
       setError(err.message || 'No se pudo enviar la solicitud');
@@ -77,14 +77,14 @@ function SolicitudTrabajoModal({ isOpen, onClose, onSubmit, user }) {
           </div>
 
           <div className="form-group">
-            <label htmlFor="motivacion">
-              Motivación *
-              <span className="char-count">({motivacion.length}/500)</span>
+            <label htmlFor="motivo">
+              Motivo *
+              <span className="char-count">({motivo.length}/500)</span>
             </label>
             <textarea
-              id="motivacion"
-              value={motivacion}
-              onChange={(e) => setMotivacion(e.target.value)}
+              id="motivo"
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
               placeholder="Explica por qué quieres ser escritor, tu experiencia, intereses..."
               required
               maxLength={500}

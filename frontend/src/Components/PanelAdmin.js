@@ -326,9 +326,9 @@ function PanelAdmin({ user }) {
                     </span>
                   </div>
 
-                  <div className="solicitud-motivacion">
-                    <strong>Motivación:</strong>
-                    <p>{solicitud.motivacion}</p>
+                  <div className="solicitud-motivo">
+                    <strong>Motivo:</strong>
+                    <p>{solicitud.motivo}</p>
                   </div>
 
                   <div className="solicitud-actions">

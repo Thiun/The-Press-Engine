@@ -25,7 +25,7 @@ public class WriterApplication {
 
     private String userEmail;
 
-    private String motivacion;
+    private String motivo;
 
     private WriterApplicationStatus estado;
 
