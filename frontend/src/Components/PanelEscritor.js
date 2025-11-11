@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './PanelEscritor.css';
 
-function PanelEscritor({ user, onClose }) {
+function PanelEscritor({ user }) {
   const [activeTab, setActiveTab] = useState('crear');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,16 +17,16 @@ function PanelEscritor({ user, onClose }) {
   });
 
   // Cargar posts del escritor
-  useEffect(() => {
-    if (user?.id) {
-      fetchPosts();
+  const fetchPosts = useCallback(async () => {
+    const userId = user?.id;
+    if (!userId) {
+      setPosts([]);
+      return;
     }
-  }, [user]);
 
-  const fetchPosts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/escritor/${user.id}`);
+      const response = await fetch(`http://localhost:8080/api/posts/escritor/${userId}`);
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
@@ -36,7 +36,11 @@ function PanelEscritor({ user, onClose }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   // Manejar selección de imagen
   const handleImageSelect = (e) => {

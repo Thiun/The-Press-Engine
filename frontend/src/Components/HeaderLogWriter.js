@@ -45,9 +45,8 @@ function HeaderLogWriter({ user, onLogout }) {
             >
               ×
             </button>
-            <PanelEscritor 
+            <PanelEscritor
               user={user}
-              onClose={() => setShowPanel(false)}
             />
           </div>
         </div>

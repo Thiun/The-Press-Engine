@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +43,8 @@ public class PostService {
                 .category(request.category())
                 .imageUrl(request.imageUrl())
                 .status(PostStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         Post saved = postRepository.save(post);
@@ -93,6 +96,8 @@ public class PostService {
             post.setFeedback(null);
             post.setDeleteReason(null);
         }
+
+        post.setUpdatedAt(LocalDateTime.now());
 
         return toResponse(postRepository.save(post));
     }

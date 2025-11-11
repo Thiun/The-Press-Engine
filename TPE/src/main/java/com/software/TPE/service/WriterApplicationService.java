@@ -15,6 +15,7 @@ import com.software.TPE.repository.WriterApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -52,6 +53,7 @@ public class WriterApplicationService {
                 .userEmail(request.userEmail().toLowerCase(Locale.ROOT))
                 .motivacion(request.motivacion())
                 .estado(WriterApplicationStatus.PENDIENTE)
+                .fechaSolicitud(LocalDateTime.now())
                 .build();
 
         WriterApplication saved = writerApplicationRepository.save(application);
