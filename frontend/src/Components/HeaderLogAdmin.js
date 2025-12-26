@@ -2,16 +2,23 @@ import React, { useState } from 'react';
 import PanelAdmin from './PanelAdmin';
 import './Headers.css';
 
+/**
+ * HeaderLogAdmin
+ *
+ * Encabezado para usuarios con rol de administrador. Muestra el título
+ * principal, un botón que abre el panel de administración y un botón
+ * para cerrar sesión. El panel de administración contiene todas las
+ * funcionalidades de gestión (solicitudes, noticias, usuarios, y ahora
+ * publicidades y comentarios).
+ */
 function HeaderLogAdmin({ user, onLogout }) {
   const [showPanel, setShowPanel] = useState(false);
-
   return (
     <>
       <header className="header-all">
         <div className="header-content">
           {/* Logo/Título a la izquierda */}
           <h1 className="header-title">The Press Engine</h1>
-          
           {/* Navegación central para administradores */}
           <nav className="header-nav-center">
             <button
@@ -21,33 +28,28 @@ function HeaderLogAdmin({ user, onLogout }) {
               ⚙️ Panel de Administración
             </button>
           </nav>
-
           {/* Información de usuario y logout a la derecha */}
           <nav className="header-nav-right">
-            <span className="user-info admin-info">Admin: {user?.name}</span>
-            <button 
-              className="header-btn logout-btn"
-              onClick={onLogout}
-            >
+            <span className="user-info admin-info">
+              Admin: {user?.name}
+            </span>
+            <button className="header-btn logout-btn" onClick={onLogout}>
               Cerrar Sesión
             </button>
           </nav>
         </div>
       </header>
-
       {/* Modal del Panel de Administrador */}
       {showPanel && (
         <div className="modal-overlay">
           <div className="modal-content panel-modal admin-modal">
-            <button 
+            <button
               className="modal-close"
               onClick={() => setShowPanel(false)}
             >
               ×
             </button>
-            <PanelAdmin
-              user={user}
-            />
+            <PanelAdmin user={user} />
           </div>
         </div>
       )}

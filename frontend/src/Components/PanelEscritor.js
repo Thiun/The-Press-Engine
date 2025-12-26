@@ -1,21 +1,32 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './PanelEscritor.css';
 
+/**
+ * PanelEscritor
+ *
+ * Permite a los usuarios con rol de escritor crear nuevas noticias, así como
+ * revisar el estado de sus publicaciones. Las noticias se cargan desde el
+ * backend según el ID del usuario. El componente presenta distintas
+ * pestañas para crear una noticia, ver todas sus noticias, ver las
+ * pendientes y ver las rechazadas, mostrando información relevante y
+ * retroalimentación del administrador en cada caso.
+ *
+ * Props:
+ *  - user (Object): Objeto del usuario autenticado con propiedades id y name.
+ */
 function PanelEscritor({ user }) {
   const [activeTab, setActiveTab] = useState('crear');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-
   // Estados para nuevo post
   const [nuevoPost, setNuevoPost] = useState({
     title: '',
     content: '',
     category: '',
     image: null,
-    imagePreview: ''
+    imagePreview: '',
   });
-
   // Cargar posts del escritor
   const fetchPosts = useCallback(async () => {
     const userId = user?.id;
@@ -23,10 +34,11 @@ function PanelEscritor({ user }) {
       setPosts([]);
       return;
     }
-
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/posts/escritor/${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/posts/escritor/${userId}`
+      );
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
@@ -37,7 +49,6 @@ function PanelEscritor({ user }) {
       setLoading(false);
     }
   }, [user?.id]);
-
   useEffect(() => {
     fetchPosts();
   }, [fetchPosts]);
@@ -51,36 +62,31 @@ function PanelEscritor({ user }) {
         alert('Por favor, selecciona solo archivos de imagen');
         return;
       }
-
       // Validar tamaño (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('La imagen debe ser menor a 5MB');
         return;
       }
-
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setNuevoPost(prev => ({
+      reader.onload = (ev) => {
+        setNuevoPost((prev) => ({
           ...prev,
           image: file,
-          imagePreview: e.target.result
+          imagePreview: ev.target.result,
         }));
       };
       reader.readAsDataURL(file);
     }
   };
-
   // Subir imagen al servidor
   const uploadImage = async (imageFile) => {
     const formData = new FormData();
     formData.append('image', imageFile);
-
     try {
       const response = await fetch('http://localhost:8080/api/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
-
       if (response.ok) {
         const data = await response.json();
         return data.imageUrl;
@@ -92,60 +98,50 @@ function PanelEscritor({ user }) {
       throw error;
     }
   };
-
   // Eliminar imagen seleccionada
   const removeImage = () => {
-    setNuevoPost(prev => ({
+    setNuevoPost((prev) => ({
       ...prev,
       image: null,
-      imagePreview: ''
+      imagePreview: '',
     }));
   };
-
   const handleCreatePost = async (e) => {
     e.preventDefault();
-    
     if (!nuevoPost.title || !nuevoPost.content || !nuevoPost.category) {
       alert('Por favor, completa todos los campos obligatorios');
       return;
     }
-
     setUploadingImage(true);
-
     try {
       let imageUrl = '';
-      
       // Subir imagen si hay una seleccionada
       if (nuevoPost.image) {
         imageUrl = await uploadImage(nuevoPost.image);
       }
-
       // Crear el post
       const response = await fetch('http://localhost:8080/api/posts', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: nuevoPost.title,
           content: nuevoPost.content,
           category: nuevoPost.category,
           authorId: user.id,
           authorName: user.name,
-          imageUrl: imageUrl
-        })
+          imageUrl: imageUrl,
+        }),
       });
-
       if (response.ok) {
         alert('✅ Noticia enviada para revisión');
-        setNuevoPost({ 
-          title: '', 
-          content: '', 
+        setNuevoPost({
+          title: '',
+          content: '',
           category: '',
           image: null,
-          imagePreview: ''
+          imagePreview: '',
         });
-        fetchPosts(); // Recargar lista
+        fetchPosts();
         setActiveTab('mis-noticias');
       } else {
         alert('Error al enviar la noticia');
@@ -157,65 +153,52 @@ function PanelEscritor({ user }) {
       setUploadingImage(false);
     }
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevoPost(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setNuevoPost((prev) => ({ ...prev, [name]: value }));
   };
-
-  const getPostsByStatus = (status) => {
-    return posts.filter(post => post.status === status);
-  };
-
+  const getPostsByStatus = (status) => posts.filter((post) => post.status === status);
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'PENDING': { class: 'pending', text: '⏳ Pendiente' },
-      'APPROVED': { class: 'approved', text: '✅ Aprobada' },
-      'REJECTED': { class: 'rejected', text: '❌ Rechazada' }
+      PENDING: { class: 'pending', text: '⏳ Pendiente' },
+      APPROVED: { class: 'approved', text: '✅ Aprobada' },
+      REJECTED: { class: 'rejected', text: '❌ Rechazada' },
     };
-    
     const config = statusConfig[status] || { class: 'pending', text: status };
     return <span className={`status-badge ${config.class}`}>{config.text}</span>;
   };
-
   return (
     <div className="panel-escritor">
       <h2>✍️ Panel del Escritor</h2>
-      
       {/* Tabs de navegación */}
       <div className="tabs">
-        <button 
+        <button
           className={`tab ${activeTab === 'crear' ? 'active' : ''}`}
           onClick={() => setActiveTab('crear')}
         >
           📝 Crear Noticia
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'mis-noticias' ? 'active' : ''}`}
           onClick={() => setActiveTab('mis-noticias')}
         >
           📋 Mis Noticias ({posts.length})
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'pendientes' ? 'active' : ''}`}
           onClick={() => setActiveTab('pendientes')}
         >
           ⏳ Pendientes ({getPostsByStatus('PENDING').length})
         </button>
-        <button 
+        <button
           className={`tab ${activeTab === 'rechazadas' ? 'active' : ''}`}
           onClick={() => setActiveTab('rechazadas')}
         >
           ❌ Rechazadas ({getPostsByStatus('REJECTED').length})
         </button>
       </div>
-
       {/* Contenido de las tabs */}
       <div className="tab-content">
-        
         {/* TAB: Crear Noticia */}
         {activeTab === 'crear' && (
           <form onSubmit={handleCreatePost} className="post-form">
@@ -231,7 +214,6 @@ function PanelEscritor({ user }) {
                 maxLength={200}
               />
             </div>
-
             <div className="form-group">
               <label>Categoría *</label>
               <select
@@ -250,24 +232,22 @@ function PanelEscritor({ user }) {
                 <option value="INTERNACIONAL">Internacional</option>
               </select>
             </div>
-
             {/* Sección de Imagen */}
             <div className="form-group">
               <label>Imagen de la noticia (Opcional)</label>
-              
               {nuevoPost.imagePreview ? (
                 <div className="image-preview-container">
                   <div className="image-preview">
                     <img src={nuevoPost.imagePreview} alt="Vista previa" />
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="btn-remove-image"
                       onClick={removeImage}
                     >
                       ✕
                     </button>
                   </div>
-                  <span className="image-name">{nuevoPost.image.name}</span>
+                  <span className="image-name">{nuevoPost.image?.name}</span>
                 </div>
               ) : (
                 <div className="image-upload-area">
@@ -278,15 +258,14 @@ function PanelEscritor({ user }) {
                     onChange={handleImageSelect}
                     className="image-input"
                   />
-                  <label htmlFor="image-upload" className="image-upload-label">
-                    <div className="upload-icon">📷</div>
-                    <span>Haz clic para seleccionar una imagen</span>
-                    <small>Formatos: JPG, PNG, GIF (Máx. 5MB)</small>
-                  </label>
+                    <label htmlFor="image-upload" className="image-upload-label">
+                      <div className="upload-icon">📷</div>
+                      <span>Haz clic para seleccionar una imagen</span>
+                      <small>Formatos: JPG, PNG, GIF (Máx. 5MB)</small>
+                    </label>
                 </div>
               )}
             </div>
-
             <div className="form-group">
               <label>Contenido *</label>
               <textarea
@@ -300,9 +279,8 @@ function PanelEscritor({ user }) {
               />
               <div className="char-count">{nuevoPost.content.length}/5000</div>
             </div>
-
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-submit-post"
               disabled={uploadingImage}
             >
@@ -310,7 +288,6 @@ function PanelEscritor({ user }) {
             </button>
           </form>
         )}
-
         {/* TAB: Mis Noticias */}
         {activeTab === 'mis-noticias' && (
           <div className="posts-list">
@@ -319,7 +296,7 @@ function PanelEscritor({ user }) {
             ) : posts.length === 0 ? (
               <div className="empty-state">
                 <p>📭 Aún no has creado ninguna noticia</p>
-                <button 
+                <button
                   className="btn-create-first"
                   onClick={() => setActiveTab('crear')}
                 >
@@ -327,48 +304,39 @@ function PanelEscritor({ user }) {
                 </button>
               </div>
             ) : (
-              posts.map(post => (
+              posts.map((post) => (
                 <div key={post.id} className="post-card">
                   <div className="post-header">
                     <h3>{post.title}</h3>
                     {getStatusBadge(post.status)}
                   </div>
-                  
                   <div className="post-meta">
                     <span className="category">🏷️ {post.category}</span>
                     <span className="date">
                       📅 {new Date(post.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-
                   {/* Mostrar imagen si existe */}
                   {post.imageUrl && (
                     <div className="post-image">
                       <img src={post.imageUrl} alt={post.title} />
                     </div>
                   )}
-
                   <p className="post-content-preview">
                     {post.content.substring(0, 150)}...
                   </p>
-
                   {/* Mostrar retroalimentación si fue rechazada */}
                   {post.status === 'REJECTED' && post.feedback && (
                     <div className="feedback-section">
                       <strong>📝 Retroalimentación del administrador:</strong>
                       <p className="feedback-text">{post.feedback}</p>
                       <div className="feedback-actions">
-                        <button className="btn-edit">
-                          ✏️ Editar y Reenviar
-                        </button>
-                        <button className="btn-delete">
-                          🗑️ Eliminar
-                        </button>
+                        <button className="btn-edit">✏️ Editar y Reenviar</button>
+                        <button className="btn-delete">🗑️ Eliminar</button>
                       </div>
                     </div>
                   )}
-
-                  {/* Mostrar si fue rechazada con motivo de eliminación */}
+                  {/* Mostrar si fue rechazado con motivo de eliminación */}
                   {post.status === 'REJECTED' && post.deleteReason && (
                     <div className="delete-section">
                       <strong>🗑️ Noticia eliminada - Razón:</strong>
@@ -386,8 +354,7 @@ function PanelEscritor({ user }) {
             )}
           </div>
         )}
-
-        {/* Otras tabs permanecen igual */}
+        {/* TAB: Pendientes */}
         {activeTab === 'pendientes' && (
           <div className="posts-list">
             {getPostsByStatus('PENDING').length === 0 ? (
@@ -395,7 +362,7 @@ function PanelEscritor({ user }) {
                 <p>✅ No tienes noticias pendientes de revisión</p>
               </div>
             ) : (
-              getPostsByStatus('PENDING').map(post => (
+              getPostsByStatus('PENDING').map((post) => (
                 <div key={post.id} className="post-card pending-card">
                   <h3>{post.title}</h3>
                   <div className="post-meta">
@@ -404,20 +371,18 @@ function PanelEscritor({ user }) {
                       Enviada: {new Date(post.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  
                   {post.imageUrl && (
                     <div className="post-image-small">
                       <img src={post.imageUrl} alt={post.title} />
                     </div>
                   )}
-                  
                   <p>⏳ Esperando revisión del administrador...</p>
                 </div>
               ))
             )}
           </div>
         )}
-
+        {/* TAB: Rechazadas */}
         {activeTab === 'rechazadas' && (
           <div className="posts-list">
             {getPostsByStatus('REJECTED').length === 0 ? (
@@ -425,19 +390,17 @@ function PanelEscritor({ user }) {
                 <p>🎉 No tienes noticias rechazadas</p>
               </div>
             ) : (
-              getPostsByStatus('REJECTED').map(post => (
+              getPostsByStatus('REJECTED').map((post) => (
                 <div key={post.id} className="post-card rejected-card">
                   <div className="post-header">
                     <h3>{post.title}</h3>
                     {getStatusBadge(post.status)}
                   </div>
-                  
                   {post.imageUrl && (
                     <div className="post-image-small">
                       <img src={post.imageUrl} alt={post.title} />
                     </div>
                   )}
-                  
                   {post.feedback && (
                     <div className="feedback-section">
                       <strong>📝 Para mejorar:</strong>

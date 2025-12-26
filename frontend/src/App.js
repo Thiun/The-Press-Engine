@@ -6,7 +6,13 @@ import HeaderLogAdmin from './Components/HeaderLogAdmin';
 import NewsFeed from './Components/NewsFeed';
 import './App.css';
 
+/**
+ * Main application component responsible for choosing the correct header based
+ * on the authenticated user's role and rendering the news feed. The user
+ * session is persisted in localStorage under the key `tpe-session`.
+ */
 function App() {
+  // Load session from localStorage on first render
   const [session, setSession] = useState(() => {
     const stored = localStorage.getItem('tpe-session');
     if (!stored) return null;
@@ -17,7 +23,10 @@ function App() {
       return null;
     }
   });
+  // Selected section is fixed to 'noticias' for now; could expand later
   const [selectedSection] = useState('noticias');
+
+  // Keep localStorage in sync with session state
   useEffect(() => {
     if (session) {
       localStorage.setItem('tpe-session', JSON.stringify(session));
@@ -26,14 +35,30 @@ function App() {
     }
   }, [session]);
 
+  /**
+   * Handle successful login from the Login component. Stores the returned
+   * session (containing user information and token) into state.
+   *
+   * @param {Object} loginPayload Session data returned from backend
+   */
   const handleLogin = (loginPayload) => {
     setSession(loginPayload);
   };
 
+  /**
+   * Clear the current session on logout.
+   */
   const handleLogout = () => {
     setSession(null);
   };
 
+  /**
+   * Submit a writer request on behalf of a reader. This is passed down
+   * to the HeaderLogLector component and executed when the reader
+   * completes the application form.
+   *
+   * @param {Object} solicitud The request payload with user id, name, email and motivo
+   */
   const handleSolicitudTrabajo = async (solicitud) => {
     try {
       const response = await fetch('http://localhost:8080/api/solicitudes', {
@@ -55,6 +80,11 @@ function App() {
     }
   };
 
+  /**
+   * Determine which header to display based on the current user's role.
+   * For unauthenticated users, show the login/register header. The
+   * appropriate header passes down event handlers for login and logout.
+   */
   const getHeaderForRole = () => {
     if (!session) {
       return (
@@ -96,7 +126,9 @@ function App() {
     <div className="App">
       {getHeaderForRole()}
       <main className="app-content">
-        {selectedSection === 'noticias' ? <NewsFeed /> : null}
+        {/* Always render the news feed. Pass the current user down so
+            comments and other user‑specific features can be shown */}
+        {selectedSection === 'noticias' ? <NewsFeed user={session?.user ?? null} /> : null}
       </main>
     </div>
   );

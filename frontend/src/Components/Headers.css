@@ -193,6 +193,24 @@
   box-shadow: 0 16px 32px rgba(23, 162, 184, 0.4);
 }
 
+/* Nueva clase para botón de publicidad */
+.publicidad-btn {
+  background: linear-gradient(120deg, #f7971e, #ffd200);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.8rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 12px 24px rgba(247, 151, 30, 0.25);
+}
+
+.publicidad-btn:hover,
+.publicidad-btn:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(247, 151, 30, 0.35);
+}
+
 .user-info {
   color: white;
   font-weight: 600;
@@ -227,23 +245,19 @@
     flex-direction: column;
     gap: 1.5rem;
   }
-
   .header-nav-center,
   .header-nav-right {
     width: 100%;
     justify-content: center;
   }
-
   .header-nav-right {
     flex-direction: column;
     gap: 0.75rem;
   }
-
   .user-info {
     width: 100%;
     text-align: center;
   }
-
   .logout-btn {
     width: 100%;
     max-width: 240px;
@@ -254,12 +268,10 @@
   .header-title {
     font-size: 1.8rem;
   }
-
   .modal-content {
     width: 95%;
     padding: 1.5rem;
   }
-
   .trabajo-btn {
     width: 100%;
     max-width: 260px;
