@@ -66,3 +66,32 @@
 .newsfeed-error {
   color: #b3261e;
 }
+
+.news-ad-card {
+  border: 2px dashed #f5b841;
+  background: #fffaf0;
+  position: relative;
+}
+
+.news-ad-label {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #f5b841;
+  color: #2b1d06;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.news-ad-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  color: #7a4f08;
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
