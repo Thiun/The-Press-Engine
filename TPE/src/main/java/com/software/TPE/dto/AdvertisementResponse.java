@@ -10,6 +10,7 @@ public record AdvertisementResponse(
         String userId,
         String userName,
         String description,
+        String imageUrl,
         int durationDays,
         boolean paid,
         LocalDateTime startDate,

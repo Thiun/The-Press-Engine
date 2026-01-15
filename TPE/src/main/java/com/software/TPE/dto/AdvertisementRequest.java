@@ -16,6 +16,8 @@ public record AdvertisementRequest(
         @NotBlank(message = "La descripción es obligatoria")
         String description,
 
+        String imageUrl,
+
         @Positive(message = "La duración debe ser mayor a 0")
         int durationDays
 ) {
