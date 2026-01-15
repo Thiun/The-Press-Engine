@@ -1,9 +1,7 @@
 package com.software.TPE.service;
 
-import com.software.TPE.dto.AdvertisementRequest;
 import com.software.TPE.dto.AdvertisementResponse;
 import com.software.TPE.dto.AdvertisementUpdateRequest;
-import com.software.TPE.exception.BadRequestException;
 import com.software.TPE.exception.ResourceNotFoundException;
 import com.software.TPE.model.Advertisement;
 import com.software.TPE.model.AdvertisementStatus;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,27 +22,6 @@ public class AdvertisementService {
         return advertisementRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();
-    }
-
-    public AdvertisementResponse create(AdvertisementRequest request) {
-        if (request.durationDays() <= 0) {
-            throw new BadRequestException("La duración debe ser mayor a 0");
-        }
-
-        Advertisement advertisement = Advertisement.builder()
-                .id(UUID.randomUUID().toString())
-                .brand(request.brand().trim())
-                .userId(request.userId())
-                .userName(request.userName())
-                .description(request.description().trim())
-                .durationDays(request.durationDays())
-                .paid(false)
-                .status(AdvertisementStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        return toResponse(advertisementRepository.save(advertisement));
     }
 
     public AdvertisementResponse updateStatus(String adId, AdvertisementUpdateRequest request) {

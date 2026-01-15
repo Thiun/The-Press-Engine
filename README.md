@@ -12,12 +12,6 @@ cd TPE
 ./mvnw spring-boot:run
 ```
 
-Windows PowerShell:
-```powershell
-cd TPE
-.\mvnw.cmd spring-boot:run
-```
-
 ### Configuration
 The backend reads the following properties from `TPE/src/main/resources/application.properties`:
 - `spring.data.mongodb.uri` (default: `mongodb://localhost:27017/the_press_engine`)
@@ -48,11 +42,3 @@ cd frontend
 npm install
 npm start
 ```
-
-## Troubleshooting
-- If you see `Request method 'POST' is not supported` when sending an advertisement,
-  confirm you pulled the latest backend changes and restart the API with
-  `./mvnw clean spring-boot:run` (or `.\mvnw.cmd clean spring-boot:run` on Windows).
-- If you still get a 405, verify you are hitting `http://localhost:8080/api/advertisements`
-  (without a proxy rewriting the path) and that the backend logs show the
-  `AdvertisementController` endpoints at startup.
