@@ -28,6 +28,8 @@ public class Advertisement {
 
     private String description;
 
+    private String imageUrl;
+
     private int durationDays;
 
     private boolean paid;

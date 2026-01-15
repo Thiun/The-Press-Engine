@@ -16,6 +16,9 @@ function PublicidadPanel({ user }) {
     description: '',
     durationDays: 7,
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -44,6 +47,25 @@ function PublicidadPanel({ user }) {
       setLoading(true);
       setError('');
       setSuccess('');
+      let imageUrl = '';
+
+      if (imageFile) {
+        setUploadingImage(true);
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        const uploadResponse = await fetch('http://localhost:8080/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('No se pudo subir la imagen.');
+        }
+
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.imageUrl;
+      }
+
       const response = await fetch('http://localhost:8080/api/advertisements', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,6 +75,7 @@ function PublicidadPanel({ user }) {
           durationDays: form.durationDays,
           userId: user.id,
           userName: user.name || 'Usuario',
+          imageUrl,
         }),
       });
 
@@ -63,11 +86,40 @@ function PublicidadPanel({ user }) {
 
       setSuccess('✅ Solicitud enviada. El administrador la revisará pronto.');
       setForm({ brand: '', description: '', durationDays: 7 });
+      setImageFile(null);
+      setImagePreview('');
     } catch (err) {
       setError(err.message || 'Ocurrió un error al enviar la solicitud.');
     } finally {
       setLoading(false);
+      setUploadingImage(false);
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setImageFile(null);
+      setImagePreview('');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Selecciona un archivo de imagen válido.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImageFile(file);
+      setImagePreview(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview('');
   };
 
   return (
@@ -112,8 +164,24 @@ function PublicidadPanel({ user }) {
             onChange={handleChange}
           />
         </label>
+        <label>
+          Imagen (opcional)
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </label>
+        {imagePreview && (
+          <div className="publicidad-image-preview">
+            <img src={imagePreview} alt="Vista previa de publicidad" />
+            <button type="button" onClick={removeImage}>
+              Quitar imagen
+            </button>
+          </div>
+        )}
         <button type="submit" disabled={loading}>
-          {loading ? 'Enviando...' : 'Enviar solicitud'}
+          {loading || uploadingImage ? 'Enviando...' : 'Enviar solicitud'}
         </button>
       </form>
       {error && <p className="publicidad-error">{error}</p>}
