@@ -56,6 +56,10 @@ function NewsFeed({ user }) {
     () => ads.filter((ad) => ad.status === 'APPROVED'),
     [ads]
   );
+  const approvedAdsWithImages = useMemo(
+    () => approvedAds.filter((ad) => ad.imageUrl?.trim()),
+    [approvedAds]
+  );
 
   if (loading) {
     return <div className="newsfeed-loading">Cargando noticias...</div>;
@@ -98,11 +102,11 @@ function NewsFeed({ user }) {
       <aside className="newsfeed-sidebar">
         <div className="newsfeed-sidebar-header">
           <h3>Publicidad</h3>
-          <span>{approvedAds.length}</span>
+          <span>{approvedAdsWithImages.length}</span>
         </div>
-        {approvedAds.length === 0 ? (
+        {approvedAdsWithImages.length === 0 ? (
           <div className="newsfeed-sidebar-empty">
-            No hay publicidades aprobadas.
+            No hay publicidades aprobadas con imagen.
           </div>
         ) : (
           approvedAds.map((ad) => (
