@@ -59,7 +59,8 @@
   max-width: 220px;
   border-radius: 10px;
   border: 1px solid #e0e0e0;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f3f4f8;
 }
 
 .publicidad-image-preview button {
