@@ -131,6 +131,11 @@
   object-fit: contain;
 }
 
+.ad-card-image-placeholder {
+  color: #6d8093;
+  font-size: 0.9rem;
+}
+
 .ad-card-content {
   padding: 1.25rem;
 }

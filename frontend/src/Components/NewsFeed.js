@@ -109,10 +109,16 @@ function NewsFeed({ user }) {
             No hay publicidades aprobadas con imagen.
           </div>
         ) : (
-          approvedAdsWithImages.map((ad) => (
+          approvedAds.map((ad) => (
             <article key={ad.id} className="ad-card">
               <div className="ad-card-image">
-                <img src={ad.imageUrl} alt={`Publicidad de ${ad.brand}`} />
+                {ad.imageUrl ? (
+                  <img src={ad.imageUrl} alt={`Publicidad de ${ad.brand}`} />
+                ) : (
+                  <div className="ad-card-image-placeholder">
+                    Imagen no disponible
+                  </div>
+                )}
               </div>
               <div className="ad-card-content">
                 <div className="ad-card-header">
