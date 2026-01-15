@@ -38,6 +38,11 @@ function PublicidadPanel({ user }) {
       return;
     }
 
+    if (!imageFile) {
+      setError('La publicidad necesita una imagen.');
+      return;
+    }
+
     if (!user?.id) {
       setError('No se pudo identificar al usuario.');
       return;
@@ -111,6 +116,13 @@ function PublicidadPanel({ user }) {
       return;
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      setError('La imagen debe ser menor a 5MB.');
+      setImageFile(null);
+      setImagePreview('');
+      return;
+    }
+
     setError('');
     setImageFile(file);
 
@@ -169,11 +181,12 @@ function PublicidadPanel({ user }) {
           />
         </label>
         <label>
-          Imagen (opcional)
+          Imagen *
           <input
             type="file"
             accept="image/*"
             onChange={handleImageChange}
+            required
           />
         </label>
         {imagePreview && (
