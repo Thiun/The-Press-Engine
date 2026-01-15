@@ -21,12 +21,18 @@ public class AdvertisementService {
     private final AdvertisementRepository advertisementRepository;
 
     public AdvertisementResponse create(AdvertisementRequest request) {
+        String imageUrl = request.imageUrl();
+        if (imageUrl != null && imageUrl.isBlank()) {
+            imageUrl = null;
+        }
+
         Advertisement advertisement = Advertisement.builder()
                 .id(UUID.randomUUID().toString())
                 .brand(request.brand().trim())
                 .userId(request.userId().trim())
                 .userName(request.userName().trim())
                 .description(request.description().trim())
+                .imageUrl(imageUrl)
                 .durationDays(request.durationDays())
                 .paid(false)
                 .status(AdvertisementStatus.PENDING)
