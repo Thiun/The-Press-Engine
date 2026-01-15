@@ -106,20 +106,26 @@ function NewsFeed({ user }) {
           </div>
         ) : (
           approvedAds.map((ad) => (
-            <article key={ad.id} className="news-card news-ad-card">
-              <div className="news-ad-label">Publicidad</div>
-              {ad.imageUrl && (
-                <div className="news-ad-image">
+            <article key={ad.id} className="ad-card">
+              <div className="ad-card-image">
+                {ad.imageUrl ? (
                   <img src={ad.imageUrl} alt={`Publicidad de ${ad.brand}`} />
+                ) : (
+                  <div className="ad-card-image-placeholder">
+                    Imagen no disponible
+                  </div>
+                )}
+              </div>
+              <div className="ad-card-content">
+                <div className="ad-card-header">
+                  <span className="ad-card-label">Publicidad</span>
+                  <span className="ad-card-duration">
+                    {ad.durationDays} días
+                  </span>
                 </div>
-              )}
-              <div className="news-card-content">
-                <h2 className="news-card-title">{ad.brand}</h2>
-                <p className="news-card-body">{ad.description}</p>
-                <div className="news-ad-meta">
-                  <span>Duración: {ad.durationDays} días</span>
-                  <span>Por: {ad.userName}</span>
-                </div>
+                <h4 className="ad-card-title">{ad.brand}</h4>
+                <p className="ad-card-body">{ad.description}</p>
+                <div className="ad-card-meta">Por: {ad.userName}</div>
               </div>
             </article>
           ))
