@@ -106,12 +106,16 @@ function PublicidadPanel({ user }) {
 
     if (!file.type.startsWith('image/')) {
       setError('Selecciona un archivo de imagen válido.');
+      setImageFile(null);
+      setImagePreview('');
       return;
     }
 
+    setError('');
+    setImageFile(file);
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      setImageFile(file);
       setImagePreview(event.target.result);
     };
     reader.readAsDataURL(file);
