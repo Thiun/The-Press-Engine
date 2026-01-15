@@ -12,12 +12,6 @@ cd TPE
 ./mvnw spring-boot:run
 ```
 
-Windows PowerShell:
-```powershell
-cd TPE
-.\mvnw.cmd spring-boot:run
-```
-
 ### Configuration
 The backend reads the following properties from `TPE/src/main/resources/application.properties`:
 - `spring.data.mongodb.uri` (default: `mongodb://localhost:27017/the_press_engine`)
