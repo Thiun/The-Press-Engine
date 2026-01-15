@@ -618,6 +618,14 @@ function PanelAdmin({ user }) {
                   <p>
                     <strong>Descripción:</strong> {ad.description}
                   </p>
+                  {ad.imageUrl && (
+                    <div className="ad-admin-image">
+                      <img
+                        src={ad.imageUrl}
+                        alt={`Imagen de publicidad para ${ad.brand}`}
+                      />
+                    </div>
+                  )}
                   <p>
                     <strong>Duración:</strong> {ad.durationDays} días
                   </p>

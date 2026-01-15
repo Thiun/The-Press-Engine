@@ -275,6 +275,20 @@
   flex-wrap: wrap;
 }
 
+.ad-admin-image {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  background: #f8f8f8;
+}
+
+.ad-admin-image img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
 /* Comentarios */
 .comments-admin-list .comment-admin-card {
   border: 1px solid #e0e0e0;
