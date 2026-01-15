@@ -1,5 +1,6 @@
 package com.software.TPE.service;
 
+import com.software.TPE.dto.AdvertisementRequest;
 import com.software.TPE.dto.AdvertisementResponse;
 import com.software.TPE.dto.AdvertisementUpdateRequest;
 import com.software.TPE.exception.ResourceNotFoundException;
@@ -11,12 +12,36 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
+
+    public AdvertisementResponse create(AdvertisementRequest request) {
+        String imageUrl = request.imageUrl();
+        if (imageUrl != null && imageUrl.isBlank()) {
+            imageUrl = null;
+        }
+
+        Advertisement advertisement = Advertisement.builder()
+                .id(UUID.randomUUID().toString())
+                .brand(request.brand().trim())
+                .userId(request.userId().trim())
+                .userName(request.userName().trim())
+                .description(request.description().trim())
+                .imageUrl(imageUrl)
+                .durationDays(request.durationDays())
+                .paid(false)
+                .status(AdvertisementStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return toResponse(advertisementRepository.save(advertisement));
+    }
 
     public List<AdvertisementResponse> findAll() {
         return advertisementRepository.findAll().stream()
@@ -59,6 +84,7 @@ public class AdvertisementService {
                 advertisement.getUserId(),
                 advertisement.getUserName(),
                 advertisement.getDescription(),
+                advertisement.getImageUrl(),
                 advertisement.getDurationDays(),
                 advertisement.isPaid(),
                 advertisement.getStartDate(),
