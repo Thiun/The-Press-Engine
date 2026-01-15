@@ -86,9 +86,6 @@ function NewsFeed({ user }) {
   if (error) {
     return <div className="newsfeed-error">{error}</div>;
   }
-  if (!news.length) {
-    return <div className="newsfeed-empty">Aún no hay noticias publicadas.</div>;
-  }
   return (
     <section className="newsfeed">
       {feedItems.map((item, index) => {
