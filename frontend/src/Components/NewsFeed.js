@@ -52,10 +52,10 @@ function NewsFeed({ user }) {
     fetchNews();
   }, []);
 
-  const sidebarAds = useMemo(() => {
+  const feedItems = useMemo(() => {
     const approvedAds = ads.filter((ad) => ad.status === 'APPROVED');
     if (!approvedAds.length) {
-      return [];
+      return news.map((item) => ({ type: 'news', data: item }));
     }
 
     const shuffledAds = [...approvedAds];
@@ -64,19 +64,21 @@ function NewsFeed({ user }) {
       [shuffledAds[i], shuffledAds[j]] = [shuffledAds[j], shuffledAds[i]];
     }
 
-    return shuffledAds;
-  }, [ads]);
+    const items = [];
+    let adIndex = 0;
+    news.forEach((item, index) => {
+      items.push({ type: 'news', data: item, key: `news-${item.id}` });
+      const shouldInsertAd = shuffledAds.length > 0 && Math.random() < 0.35;
+      const hasMoreNews = index < news.length - 1;
+      if (shouldInsertAd && hasMoreNews && adIndex < shuffledAds.length) {
+        const ad = shuffledAds[adIndex];
+        items.push({ type: 'ad', data: ad, key: `ad-${ad.id}-${index}` });
+        adIndex += 1;
+      }
+    });
 
-  const resolveAdImageUrl = (imageUrl) => {
-    if (!imageUrl) return '';
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl;
-    }
-    if (imageUrl.startsWith('/')) {
-      return `http://localhost:8080${imageUrl}`;
-    }
-    return `http://localhost:8080/${imageUrl}`;
-  };
+    return items;
+  }, [ads, news]);
 
   if (loading) {
     return <div className="newsfeed-loading">Cargando noticias...</div>;
@@ -85,66 +87,56 @@ function NewsFeed({ user }) {
     return <div className="newsfeed-error">{error}</div>;
   }
   return (
-    <section className="newsfeed-layout">
-      <div className="newsfeed-main">
-        {news.length === 0 ? (
-          <div className="newsfeed-empty">Aún no hay noticias publicadas.</div>
-        ) : (
-          news.map((item) => (
-            <article key={item.id} className="news-card">
-              {item.imageUrl && (
-                <div className="news-card-image">
-                  <img src={item.imageUrl} alt={item.title} />
-                </div>
-              )}
+    <section className="newsfeed">
+      {feedItems.map((item, index) => {
+        if (item.type === 'ad') {
+          return (
+            <article
+              key={item.key || `ad-${index}`}
+              className="news-card news-ad-card"
+            >
+              <div className="news-ad-label">Publicidad</div>
               <div className="news-card-content">
-                <h2 className="news-card-title">{item.title}</h2>
-                <div className="news-card-meta">
-                  <span>{item.authorName}</span>
-                  {item.category && (
-                    <span className="news-card-category">{item.category}</span>
-                  )}
-                  <span>
-                    {new Date(item.createdAt).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </span>
+                <h2 className="news-card-title">{item.data.brand}</h2>
+                <p className="news-card-body">{item.data.description}</p>
+                <div className="news-ad-meta">
+                  <span>Duración: {item.data.durationDays} días</span>
+                  <span>Por: {item.data.userName}</span>
                 </div>
-                <p className="news-card-body">{item.content}</p>
-                {/* Renderizar sección de comentarios para cada noticia */}
-                <CommentsSection postId={item.id} user={user} />
               </div>
             </article>
-          ))
-        )}
-      </div>
-      {sidebarAds.length > 0 && (
-        <aside className="newsfeed-sidebar">
-          <div className="newsfeed-sidebar-header">Publicidad</div>
-          <div className="newsfeed-sidebar-list">
-            {sidebarAds.map((ad) => (
-              <article key={ad.id} className="news-ad-card">
-                <div className="news-ad-label">Sponsor</div>
-                {ad.imageUrl && (
-                  <div className="news-ad-image">
-                    <img src={resolveAdImageUrl(ad.imageUrl)} alt={ad.brand} />
-                  </div>
+          );
+        }
+
+        return (
+          <article key={item.data.id} className="news-card">
+            {item.data.imageUrl && (
+              <div className="news-card-image">
+                <img src={item.data.imageUrl} alt={item.data.title} />
+              </div>
+            )}
+            <div className="news-card-content">
+              <h2 className="news-card-title">{item.data.title}</h2>
+              <div className="news-card-meta">
+                <span>{item.data.authorName}</span>
+                {item.data.category && (
+                  <span className="news-card-category">{item.data.category}</span>
                 )}
-                <div className="news-ad-content">
-                  <h3>{ad.brand}</h3>
-                  <p>{ad.description}</p>
-                  <div className="news-ad-meta">
-                    <span>{ad.durationDays} días</span>
-                    <span>{ad.userName}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </aside>
-      )}
+                <span>
+                  {new Date(item.data.createdAt).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
+              </div>
+              <p className="news-card-body">{item.data.content}</p>
+              {/* Renderizar sección de comentarios para cada noticia */}
+              <CommentsSection postId={item.data.id} user={user} />
+            </div>
+          </article>
+        );
+      })}
     </section>
   );
 }
