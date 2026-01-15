@@ -78,6 +78,7 @@ public class AdvertisementService {
                 advertisement.getUserId(),
                 advertisement.getUserName(),
                 advertisement.getDescription(),
+                advertisement.getImageUrl(),
                 advertisement.getDurationDays(),
                 advertisement.isPaid(),
                 advertisement.getStartDate(),

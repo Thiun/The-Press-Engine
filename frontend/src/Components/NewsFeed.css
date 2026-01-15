@@ -1,4 +1,11 @@
-.newsfeed {
+.newsfeed-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.newsfeed-main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
