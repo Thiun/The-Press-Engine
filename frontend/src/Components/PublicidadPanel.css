@@ -1,0 +1,58 @@
+.publicidad-panel {
+  min-width: 320px;
+}
+
+.publicidad-panel h2 {
+  margin-bottom: 8px;
+}
+
+.publicidad-subtitle {
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.publicidad-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.publicidad-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.publicidad-form input,
+.publicidad-form textarea {
+  border-radius: 8px;
+  border: 1px solid #d6d6d6;
+  padding: 8px;
+  font-size: 0.95rem;
+}
+
+.publicidad-form button {
+  align-self: flex-start;
+  background: #1d5cff;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.publicidad-form button:disabled {
+  background: #9bb4ff;
+  cursor: not-allowed;
+}
+
+.publicidad-error {
+  color: #b00020;
+  margin-top: 12px;
+}
+
+.publicidad-success {
+  color: #1b7f3c;
+  margin-top: 12px;
+}
